@@ -1,28 +1,25 @@
-import java.util.*;
-import java.util.stream.*;
-
 public class Main {
     public static void main(String[] args) {
-        Scanner sc= new Scanner(System.in);
+        TypeSafeCache<String, Integer> grades = new TypeSafeCache<>("Оценки");
+        TypeSafeCache<String, Integer> noGrades = new TypeSafeCache<>("Нет оценок");
 
-        OrderManager orderManager = new OrderManager();
+        grades.put("Иван", 5);
+        grades.put("Пётр", 4);
+        grades.put("Мария", 3);
 
-        orderManager.submitOrder(new Order(0,"Продукт 1"));
-        orderManager.submitOrder(new Order(1,"Продукт 2"));
-        orderManager.submitOrder(new Order(2,"Продукт 3"));
-        orderManager.submitOrder(new Order(3,"Продукт 4"));
-        orderManager.submitOrder(new Order(4,"Продукт 5 "));
+        System.out.println(grades.getOrCreate("Иван", k -> 0));    // 5
+        System.out.println(grades.getOrCreate("Анна", k -> 0));    // 0
 
-        orderManager.getProcessedCount();
+        TypeSafeCache<String, Integer> excellent = grades.filter(g -> g >= 4);
+        System.out.println(excellent);  // {Иван=5, Пётр=4}
 
-        try {
-            orderManager.waitForAll();
-        } catch (InterruptedException e) {
-            System.out.println(e.toString());
-        }
+        System.out.println(grades.getOrElse("Нет такого", -1));   // -1
+        System.out.println(noGrades.getOrElse("Нет такого", -1));   // -1
 
-        System.out.println(orderManager.getProcessedCount());
-
-        System.out.println(Runtime.getRuntime().availableProcessors());
+        TypeSafeCache<Integer, String> products = new TypeSafeCache<>("Продукты");
+        System.out.println(products.getOrCreate(1, id -> "Продукт #" + id));
+        System.out.println(products.getOrCreate(2, id -> "Продукт #" + id));
+        System.out.println(products.getOrCreate(3, id -> "Продукт #" + id));
+        System.out.println(products);
     }
 }
